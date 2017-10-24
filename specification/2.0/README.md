@@ -3805,7 +3805,80 @@ Application-specific data.
 
 # Appendix B: BRDF Implementation
 
-**TODO**
+*This section is non-normative.*
+
+The glTF spec is designed to allow applications to choose different lighting implementations based on their requirements.
+
+An implementation sample is available at https://github.com/KhronosGroup/glTF-WebGL-PBR/ and is provided as an example of a standard way to implement an opaque BRDF based on the glTF material parameters, is not a normative implementation.
+
+The core lighting equation the sample uses is the Schlick BRDF model from [An Inexpensive BRDF Model for Physically-based Rendering](https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf)
+
+```
+vec3 specContrib = F * G * D / (4.0 * N·L * N·V);
+vec3 diffuseContrib = (1.0 - F) * diffuse;
+```
+
+Below are common implementations for the various terms found in the lighting equation.
+
+### Surface Reflection Ratio (F)
+
+**Frensel Schlick**
+
+Simplified implementation of fresnel from [An Inexpensive BRDF Model for Physically based Rendering](https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf) by Christophe Schlick.
+
+```
+vec3 specularReflection(PBRInfo pbrInputs)
+{
+    return pbrInputs.metalness + (vec3(1.0) - pbrInputs.metalness) * pow(1.0 - pbrInputs.VdotH, 5.0);
+}
+```
+
+### Geometric Occlusion (G)
+
+**Schlick**
+
+Implementation of microfacet occlusion from [An Inexpensive BRDF Model for Physically based Rendering](https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf) by Christophe Schlick.
+
+```
+float geometricOcclusion(PBRInfo pbrInputs)
+{
+    float k = pbrInputs.perceptualRoughness * 0.79788; // 0.79788 = sqrt(2.0/3.1415); perceptualRoughness = sqrt(alphaRoughness);
+    // alternately, k can be defined with
+    // float k = (pbrInputs.perceptualRoughness + 1) * (pbrInputs.perceptualRoughness + 1) / 8;
+
+    float l = pbrInputs.LdotH / (pbrInputs.LdotH * (1.0 - k) + k);
+    float n = pbrInputs.NdotH / (pbrInputs.NdotH * (1.0 - k) + k);
+    return l * n;
+}
+```
+
+### Microfaced Distribution (D)
+
+**Trowbridge-Reitz**
+
+Implementation of microfaced distrubtion from [Average Irregularity Representation of a Roughened Surface for Ray Reflection](https://www.osapublishing.org/josa/abstract.cfm?uri=josa-65-5-531) by T. S. Trowbridge, and K. P. Reitz
+
+```
+float microfacetDistribution(PBRInfo pbrInputs)
+{
+    float roughnessSq = pbrInputs.alphaRoughness * pbrInputs.alphaRoughness;
+    float f = (pbrInputs.NdotH * roughnessSq - pbrInputs.NdotH) * pbrInputs.NdotH + 1.0;
+    return roughnessSq / (M_PI * f * f);
+}
+```
+
+### Diffuse Term
+
+**Lambert**
+
+Implementation of diffuse from [Lambert's Photometria](https://archive.org/details/lambertsphotome00lambgoog) by Johann Heinrich Lambert
+
+```
+vec3 diffuse(PBRInfo pbrInputs)
+{
+    return pbrInputs.diffuseColor / M_PI;
+}
+```
 
 # Appendix C: Spline Interpolation
 
