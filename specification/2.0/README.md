@@ -3835,15 +3835,15 @@ The core lighting equation the sample uses is the Schlick BRDF model from [An In
 
 Below are common implementations for the various terms found in the lighting equation.
 
-### Surface Reflection Ratio (F())
+### Surface Reflection Ratio (F)
 
-**Frensel Schlick**
+**Fresnel Schlick**
 
-Simplified implementation of fresnel from [An Inexpensive BRDF Model for Physically based Rendering](https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf) by Christophe Schlick.
+Simplified implementation of Fresnel from [An Inexpensive BRDF Model for Physically based Rendering](https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf) by Christophe Schlick.
 
 ![](figures/lightingF.PNG)
 
-### Geometric Occlusion (G())
+### Geometric Occlusion (G)
 
 **Schlick**
 
@@ -3851,7 +3851,7 @@ Implementation of microfacet occlusion from [An Inexpensive BRDF Model for Physi
 
 ![](figures/lightingG.PNG)
 
-### Microfaced Distribution (D())
+### Microfaced Distribution (D)
 
 **Trowbridge-Reitz**
 
@@ -3859,7 +3859,7 @@ Implementation of microfaced distrubtion from [Average Irregularity Representati
 
 ![](figures/lightingD.PNG)
 
-### Diffuse Term (diffuse())
+### Diffuse Term (diffuse)
 
 **Lambert**
 
